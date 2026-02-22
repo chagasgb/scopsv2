@@ -1,0 +1,28 @@
+camadas:
+  backend:
+    tecnologia: "Python"
+    versao: "3.12"
+
+  frontend:
+    tecnologia: "VUE"
+    versao: "3"
+
+recursos:
+  db_main:
+    tipo: database
+    engine: postgres
+    porta: 5432
+
+  api_users:
+    tipo: api
+    porta: 8000
+    camada: backend
+
+blueprints:
+  gerar_api:
+    recurso: api_users
+    output: "src/api"
+
+  gerar_db:
+    recurso: db_main
+    output: "infra/db"
