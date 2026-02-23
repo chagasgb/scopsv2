@@ -50,6 +50,23 @@ class Manifest:
         ]
 
     # =========================
+    # Geração de ENV
+    # =========================
+    def gerar_env_tecnologias(self, output_path: str) -> None:
+        linhas = []
+
+        for nome, dados in self.camadas.items():
+            tech = dados.get("tecnologia")
+            if isinstance(tech, str):
+                tech = tech.strip().lower()
+                chave = f"{nome.upper()}_TECNOLOGIA"
+                linhas.append(f"{chave}={tech}")
+
+        conteudo = "\n".join(linhas) + "\n"
+
+        Path(output_path).write_text(conteudo, encoding="utf-8")
+
+    # =========================
     # Helpers Recursos
     # =========================
     def recurso(self, nome: str) -> Optional[dict]:
@@ -94,5 +111,35 @@ print(manifest.blueprints)
 print("\nRecursos do tipo 'api':")
 print(manifest.recursos_por_tipo("api"))
 
+manifest.gerar_env_tecnologias(".env")
+
+
 print("\nBlueprints do recurso api_users:")
 print(manifest.blueprints_do_recurso("api_users"))
+
+
+import typer
+
+app = typer.Typer()
+
+manifest: Manifest | None = None
+
+
+@app.callback()
+def main(manifest_path: str = typer.Option("manifesto.yml")):
+    global manifest
+    manifest = Manifest.load(manifest_path)
+
+
+@app.command()
+def listar_camadas():
+    print(manifest.camadas)
+
+
+@app.command()
+def listar_recursos():
+    print(manifest.recursos)
+
+
+if __name__ == "__main__":
+    app()
